@@ -1,4 +1,3 @@
-from doctest import OutputChecker
 import json
 import requests
 import os
@@ -21,8 +20,11 @@ Example input:
 """
 def get_and_save_product_month_data(product_id, year, month, output_folder):
     result_array = get_product_month_candle(product_id, year, month)
-    save_as_parquet(result_array, product_id, year, month, output_folder)
-    verify_product_month_data(product_id, year, month, output_folder)
+    if (len(result_array) != 0) or (len(result_array[0]) != 0):
+        save_as_parquet(result_array, product_id, year, month, output_folder)
+        verify_product_month_data(product_id, year, month, output_folder)
+    else:
+        print(f"No data found for {product_id}, for {year}/{month}, not saving")
 
 def verify_product_month_data(product_id, year, month, output_folder):
     df = load_from_parquet(product_id, year, month, output_folder)
@@ -88,9 +90,9 @@ def request_data(product_id, start_time, end_time):
     try:
         url = f"https://api.exchange.coinbase.com/products/{product_id}/candles?granularity={60}&start={start_time.isoformat()}&end={end_time.isoformat()}"
         headers = {"Accept": "application/json"}
-        print("Before response ", product_id, start_time, end_time)
+        # print("Before response ", product_id, start_time, end_time)
         response = requests.get(url, headers=headers)
-        print("after response", response, response.text)
+        # print("after response", response, response.text)
         return json.loads(response.text)
     except:
         print(f"Failed to request {product_id}, {start_time} - {end_time}")
