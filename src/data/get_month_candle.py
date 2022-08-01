@@ -66,9 +66,8 @@ def get_product_month_candle(product_id, year, month):
             break
         result = request_data(product_id, start_time, end_time)
         result.reverse()
-        if (len(result) == 0):
-            continue
-        result_array.extend(result)
+        if (len(result) != 0):
+            result_array.extend(result)
         start_time = end_time
         if (start_time.month != month):
             break
@@ -89,7 +88,9 @@ def request_data(product_id, start_time, end_time):
     try:
         url = f"https://api.exchange.coinbase.com/products/{product_id}/candles?granularity={60}&start={start_time.isoformat()}&end={end_time.isoformat()}"
         headers = {"Accept": "application/json"}
+        print("Before response ", product_id, start_time, end_time)
         response = requests.get(url, headers=headers)
+        print("after response", response, response.text)
         return json.loads(response.text)
     except:
         print(f"Failed to request {product_id}, {start_time} - {end_time}")
