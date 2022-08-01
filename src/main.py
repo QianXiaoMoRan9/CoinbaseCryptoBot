@@ -10,7 +10,7 @@ if __name__ == "__main__":
         product_dir = os.path.join(BASE_DIR, product_id)
         os.mkdir(product_dir) if not os.path.exists(product_dir) else print("")
         for year in [2019, 2020, 2021, 2022]:
-            month_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 11 ,12]
+            month_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ,12]
             if year == 2022:
                 month_list = [1, 2, 3, 4, 5, 6]
             for month in month_list:
