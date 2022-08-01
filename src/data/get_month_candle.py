@@ -20,7 +20,7 @@ Example input:
 """
 def get_and_save_product_month_data(product_id, year, month, output_folder):
     result_array = get_product_month_candle(product_id, year, month)
-    if (len(result_array) != 0) or (len(result_array[0]) != 0):
+    if (len(result_array) != 0) and (len(result_array[0]) != 0):
         save_as_parquet(result_array, product_id, year, month, output_folder)
         verify_product_month_data(product_id, year, month, output_folder)
     else:
