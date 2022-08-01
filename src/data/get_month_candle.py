@@ -66,6 +66,8 @@ def get_product_month_candle(product_id, year, month):
             break
         result = request_data(product_id, start_time, end_time)
         result.reverse()
+        if (len(result) == 0):
+            continue
         result_array.extend(result)
         start_time = end_time
         if (start_time.month != month):
@@ -84,10 +86,14 @@ def load_from_parquet(product_id, year, month, output_folder):
     return pd.read_parquet(f'{output_folder}/{product_id}_{year}_{month}.parquet', engine='pyarrow')
 
 def request_data(product_id, start_time, end_time):
-    url = f"https://api.exchange.coinbase.com/products/{product_id}/candles?granularity={60}&start={start_time.isoformat()}&end={end_time.isoformat()}"
-    headers = {"Accept": "application/json"}
-    response = requests.get(url, headers=headers)
-    return json.loads(response.text)
+    try:
+        url = f"https://api.exchange.coinbase.com/products/{product_id}/candles?granularity={60}&start={start_time.isoformat()}&end={end_time.isoformat()}"
+        headers = {"Accept": "application/json"}
+        response = requests.get(url, headers=headers)
+        return json.loads(response.text)
+    except:
+        print(f"Failed to request {product_id}, {start_time} - {end_time}")
+        return []
 
 def find_last_minute_in_month(month, end_time):
     delta = GRANULARITY
