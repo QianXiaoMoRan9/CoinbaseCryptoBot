@@ -6,6 +6,7 @@ import pyarrow.parquet as pq
 import pandas as pd
 import pyarrow as pa
 import time
+from utils.directory_utils import get_monthly_partition_file_name
 TPS = 3
 MAX_RECORD = 300
 GRANULARITY = timedelta(minutes=1)
@@ -81,18 +82,18 @@ def save_as_parquet(result_array, product_id, year, month, output_folder):
     df = pd.DataFrame(result_array)
     df.columns=["time", "low", "high", "open", "close", "volume"]
     table = pa.Table.from_pandas(df)
-    pq.write_table(table, os.path.join(output_folder, f'{product_id}_{year}_{month}.parquet'))
+    pq.write_table(table, get_monthly_partition_file_name(output_folder, product_id, year, month))
 
 def load_from_parquet(product_id, year, month, output_folder):
-    return pd.read_parquet(f'{output_folder}/{product_id}_{year}_{month}.parquet', engine='pyarrow')
+    return pd.read_parquet(get_monthly_partition_file_name(output_folder, product_id, year, month), engine='pyarrow')
 
 def request_data(product_id, start_time, end_time):
     try:
         url = f"https://api.exchange.coinbase.com/products/{product_id}/candles?granularity={60}&start={start_time.isoformat()}&end={end_time.isoformat()}"
         headers = {"Accept": "application/json"}
-        # print("Before response ", product_id, start_time, end_time)
+        print("Before response ", product_id, start_time, end_time)
         response = requests.get(url, headers=headers)
-        # print("after response", response, response.text)
+        print("after response", response)
         return json.loads(response.text)
     except:
         print(f"Failed to request {product_id}, {start_time} - {end_time}")
