@@ -1,4 +1,4 @@
-from data.get_month_candle import load_from_parquet
+from data.getter.get_month_candle import load_from_parquet
 from datetime import datetime, timedelta
 from utils.directory_utils import get_monthly_partition_file_name
 """
