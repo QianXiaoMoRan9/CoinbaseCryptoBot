@@ -1,32 +1,27 @@
-from data.get_month_candle import get_and_save_product_month_data, verify_product_month_data
-from data.get_product_list import get_product_list
 import os
-PRODUCT_LIST = get_product_list()
+from data.executor.execute_get_monthly_data import execute_get_monthly_data_for_product
 
+from utils.directory_utils import get_monthly_partition_file_name
 if __name__ == "__main__":
-    BASE_DIR = "./output"
-    # for product_id in PRODUCT_LIST:
-    #     if product_id == "1INCH-BTC":
-    #         continue
-    #     print(f"Starting product: {product_id}")
-    #     product_dir = os.path.join(BASE_DIR, product_id)
-    #     os.mkdir(product_dir) if not os.path.exists(product_dir) else print("")
-    #     for year in [2019, 2020, 2021, 2022]:
-    #         month_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ,12]
-    #         if year == 2022:
-    #             month_list = [1, 2, 3, 4, 5, 6, 7]
-    #         for month in month_list:
-    #             print(f"Starting year/month: {year}/{month}")
-    #             get_and_save_product_month_data(product_id, year, month, product_dir)
-    product_id = "BTC-USD"
-    product_dir = os.path.join(BASE_DIR, product_id)
-    os.mkdir(product_dir) if not os.path.exists(product_dir) else print("")
-    for year in [2019, 2020, 2021, 2022]:
-        month_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ,12]
-        if year == 2022:
-            month_list = [1, 2, 3, 4, 5, 6, 7]
-        for month in month_list:
-            print(f"Starting year/month: {year}/{month}")
-            get_and_save_product_month_data(product_id, year, month, product_dir)
-    
-    # verify_product_month_data("BTC-USD", 2022, 4, "./output")
+    # BASE_DIR = "./raw"
+    # execute_get_monthly_data_for_product("SOL-USD", BASE_DIR)
+
+    raw_data_dir = "./raw"
+    output_data_dir = "./processed"
+    product_id = "ETH-USD"
+    start_year = 2019
+    start_month = 1
+    end_year = 2022
+    end_month = 7
+
+    for cur_year in range(start_year, end_year + 1):
+        month_list = [x for x in range(1, 12 + 1)]
+        if cur_year == start_year:
+            month_list = [x for x in range(start_month, 12 + 1)]
+        elif cur_year == end_year:
+            month_list = [x for x in range(1, end_month + 1)]
+        
+        for cur_month in month_list:
+            raw_data_path = get_monthly_partition_file_name(raw_data_dir, product_id, cur_year, cur_month)
+            
+
