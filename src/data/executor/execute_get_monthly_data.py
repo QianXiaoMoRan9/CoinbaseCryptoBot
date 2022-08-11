@@ -1,6 +1,6 @@
 import os
 
-from data.getter.get_month_candle import get_and_save_product_month_data, verify_product_month_data
+from data.getter.get_month_candle import get_and_save_product_month_data
 from data.getter.get_product_list import get_product_list
 
 def execute_get_monthly_data_for_all_product(raw_data_dir):
