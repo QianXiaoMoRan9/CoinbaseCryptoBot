@@ -2,3 +2,4 @@ requests
 pyarrow
 pandas
 tqdm
+notebook
