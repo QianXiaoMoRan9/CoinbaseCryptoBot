@@ -3,3 +3,6 @@ pyarrow
 pandas
 tqdm
 notebook
+
+websocket-client
+rel
