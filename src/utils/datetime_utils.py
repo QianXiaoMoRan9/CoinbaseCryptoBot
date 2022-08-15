@@ -15,5 +15,5 @@ def get_sorted_year_month(start_datetime: datetime, end_datetime: datetime):
         elif year == start_year:
             month_list = [x for x in range(start_month, 13)]
         for month in month_list:
-            result.append(year, month)
+            result.append((year, month))
     return result

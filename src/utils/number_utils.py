@@ -1,7 +1,3 @@
-
-from asyncio import ProactorEventLoop
-
-
 import math
 
 def precision_to_precision_value(precision: int) -> float:
