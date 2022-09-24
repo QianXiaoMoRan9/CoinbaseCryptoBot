@@ -4,6 +4,8 @@ from utils.directory_utils import get_monthly_partition_file_name
 from utils.datetime_utils import get_sorted_year_month
 from data.model.partition import Partition
 from utils.number_utils import get_interval_steps, round_float, precision_to_precision_value
+import numpy as np
+
 """
 Assumes the directory structure is the following:
 base_directory/
@@ -13,8 +15,15 @@ base_directory/
 start_datetime: datetime.datetime
 end_datetime: datetime.datetime
 
+Returns:
+[
+    [20.56, 500],
+    [20.57, 200],
+    [20.58, 100],
+    ...
+]
 """
-def get_interval_positions(base_directory: str, product_id: str, start_timestamp: int, end_timestamp: int, precision=2):
+def get_interval_market_positions(base_directory: str, product_id: str, start_timestamp: int, end_timestamp: int, precision=2):
     assert start_timestamp <= end_timestamp, f"End time should be same or later then start time, got start {start_timestamp}, end {end_timestamp}"
     start_datetime = datetime.fromtimestamp(start_timestamp)
     end_datetime = datetime.fromtimestamp(end_timestamp)
@@ -36,7 +45,6 @@ def get_interval_positions(base_directory: str, product_id: str, start_timestamp
         df_end_index = (calculated_end_timestamp - df_start_timestamp) // 100
 
         for df_index in range(df_start_index, df_end_index + 1):
-            
             num_start = round_float(df[Partition.LOW][df_index], precision)
             num_end = round_float(df[Partition.HIGH][df_index], precision)
             steps = get_interval_steps(num_start, num_end, precision)
