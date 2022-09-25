@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 import numpy as np
 import math
+from Tidesurf.utils.pretty_print import pretty_print
+from datetime import datetime
 
 """
 市场在一个时间区间之内的头寸分布情况
@@ -38,8 +40,19 @@ class MarketPositions(object):
         return self.prices.shape[0]
 
     def get_index_from_price(self, price: float) -> int:
-        if (price < self.prices[0] or price > self.prices[-1]):
+        if price < self.prices[0] or price > self.prices[-1]:
             return -1
         index = math.floor((price - self.prices[0]) / self.get_step())
         assert index < self.prices.shape[0], "Index should not exceed the max value"
         return index
+    
+    def __repr__(self) -> str:
+        return pretty_print({
+            "start_timestamp": self.start_timestamp,
+            "start_datetime": datetime.fromtimestamp(self.start_timestamp),
+            "end_timestamp": self.end_timestamp,
+            "end_datetime": datetime.fromtimestamp(self.end_timestamp),
+            "precision": self.precision,
+            "prices, positions": self.prices,
+            "positions": self.positions
+        })

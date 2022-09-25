@@ -1,7 +1,5 @@
 from email import message
 import websocket
-import _thread
-import time
 import rel
 import json
 from multiprocessing import Process, Queue

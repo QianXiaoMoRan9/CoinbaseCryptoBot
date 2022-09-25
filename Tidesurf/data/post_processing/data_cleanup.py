@@ -2,10 +2,11 @@
 # Calibrate the data for the correct data for the correct month for each partition
 import os
 from tqdm import tqdm
-from utils.directory_utils import get_monthly_partition_file_name
-from data.getter.get_month_candle import load_from_parquet, save_as_parquet
+from Tidesurf.utils.directory_utils import get_monthly_partition_file_name
+from Tidesurf.data.getter.get_month_candle import load_from_parquet, save_as_parquet
 from datetime import datetime, timedelta, date
-from data.model.partition import Partition
+from Tidesurf.data.model.partition import Partition
+
 
 def raw_data_cleanup(raw_data_dir, output_data_dir, product_id, start_year, start_month, end_year, end_month):
     # use sliding window to gradually shift data
@@ -28,7 +29,7 @@ def raw_data_cleanup(raw_data_dir, output_data_dir, product_id, start_year, star
             month_list = [x for x in range(start_month, 12 + 1)]
         elif cur_year == end_year:
             month_list = [x for x in range(1, end_month + 1)]
-        
+
         for cur_month in month_list:
             raw_data_df = load_from_parquet(product_id, cur_year, cur_month, raw_data_dir)
 
@@ -38,10 +39,11 @@ def raw_data_cleanup(raw_data_dir, output_data_dir, product_id, start_year, star
 
                     if prev_year is None:
                         prev_year = cur_time.year
-                        prev_month = cur_time.month 
+                        prev_month = cur_time.month
                     else:
                         if (prev_year != cur_time.year) or (prev_month != cur_time.month):
-                            raise Exception(f"We should not get multiple prev year month. prev: {prev_year}/{prev_month}, cur_time: {cur_time.year}/{cur_time.month}")
+                            raise Exception(
+                                f"We should not get multiple prev year month. prev: {prev_year}/{prev_month}, cur_time: {cur_time.year}/{cur_time.month}")
 
                     dedup_result = dedup_and_pad_from_tail(prev_data, partition_row_to_list(row))
                     if dedup_result:
@@ -52,7 +54,8 @@ def raw_data_cleanup(raw_data_dir, output_data_dir, product_id, start_year, star
                         next_month = cur_time.month
                     else:
                         if (next_year != cur_time.year) or (next_month != cur_time.month):
-                            raise Exception(f"We should not get multiple prev year month. prev: {next_year}/{next_month}, cur_time: {cur_time.year}/{cur_time.month}")
+                            raise Exception(
+                                f"We should not get multiple prev year month. prev: {next_year}/{next_month}, cur_time: {cur_time.year}/{cur_time.month}")
                     dedup_result = dedup_and_pad_from_tail(next_data, partition_row_to_list(row))
                     if dedup_result:
                         next_data.extend(dedup_result)
@@ -82,6 +85,7 @@ def raw_data_cleanup(raw_data_dir, output_data_dir, product_id, start_year, star
         consolidate_save_as_parquet(cur_data, product_id, cur_time.year, cur_time.month, output_data_dir)
         print(f"Saving next month spillover: {cur_time.year}/{cur_time.month}")
 
+
 def verify_cleanup(data_dir, product_id, start_year, start_month, end_year, end_month):
     for cur_year in range(start_year, end_year + 1):
         month_list = [x for x in range(1, 12 + 1)]
@@ -89,10 +93,11 @@ def verify_cleanup(data_dir, product_id, start_year, start_month, end_year, end_
             month_list = [x for x in range(start_month, 12 + 1)]
         elif cur_year == end_year:
             month_list = [x for x in range(1, end_month + 1)]
-        
+
         for cur_month in month_list:
             verify_product_month_data(product_id, cur_year, cur_month, data_dir)
             print(f"Finished verifying {cur_year}/{cur_month}")
+
 
 def verify_product_month_data(product_id, year, month, output_folder):
     df = load_from_parquet(product_id, year, month, output_folder)
@@ -106,19 +111,23 @@ def verify_product_month_data(product_id, year, month, output_folder):
             continue
         now = row[Partition.TIME]
         if int(now) - cur_time != 60:
-            print(f"Problem, non increading sequence now: {datetime.fromtimestamp(now)}, cur_time: {datetime.fromtimestamp(cur_time)}")
+            print(
+                f"Problem, non increading sequence now: {datetime.fromtimestamp(now)}, cur_time: {datetime.fromtimestamp(cur_time)}")
         cur_time = int(now)
     end_time = cur_time
     start_time_object = datetime.fromtimestamp(start_time)
     end_time_object = datetime.fromtimestamp(end_time)
     if (start_time_object.year != year or start_time_object.month != month):
-        print(f"Start time does not align with the input, expected y:m {year}:{month}, got {start_time_object.year}:{start_time_object.month}")
+        print(
+            f"Start time does not align with the input, expected y:m {year}:{month}, got {start_time_object.year}:{start_time_object.month}")
     if (start_time_object.hour != 0 or start_time_object.minute != 0 or start_time_object.second != 0):
         print(f"Start time is not zero o clock")
     if (end_time_object.year != year or end_time_object.month != month):
-        print(f"End time does not align with the input, expected y:m {year}:{month}, got {end_time_object.year}:{end_time_object.month}")
+        print(
+            f"End time does not align with the input, expected y:m {year}:{month}, got {end_time_object.year}:{end_time_object.month}")
     if (end_time_object.hour != 23 or end_time_object.minute != 59 or end_time_object.second != 0):
         print(f"Start time is not last second")
+
 
 def partition_row_to_list(row):
     return [
@@ -129,6 +138,7 @@ def partition_row_to_list(row):
         row[Partition.CLOSE],
         row[Partition.VOLUME],
     ]
+
 
 def dedup_and_pad_from_tail(existing_data_list, new_row):
     pad_start_timestamp = 0
@@ -142,6 +152,7 @@ def dedup_and_pad_from_tail(existing_data_list, new_row):
         return []
     return get_padded_list_forward(last_timestamp + 60, new_row)
 
+
 def get_padded_list_forward(start_timestamp, cur_row):
     start_timestamp = int(start_timestamp)
     cur_timestamp = int(cur_row[0])
@@ -151,6 +162,7 @@ def get_padded_list_forward(start_timestamp, cur_row):
     result.append(cur_row)
     return result
 
+
 def get_padded_list_backward(existing_data_list):
     tail_timestamp = int(existing_data_list[-1][0])
     end_timestamp = int(get_last_day_of_month_timestap(tail_timestamp))
@@ -158,11 +170,13 @@ def get_padded_list_backward(existing_data_list):
         [i_timestamp, 0, 0, 0, 0, 0] for i_timestamp in range(tail_timestamp + 60, end_timestamp + 60, 60)
     ]
 
+
 def get_last_day_of_month_timestap(timestamp):
     # returns the timestamp oft he last second of the month for the month that input timestamp is in
     dt = datetime.fromtimestamp(timestamp)
     last_date = last_day_of_month(date(dt.year, dt.month, dt.day))
     return datetime(last_date.year, last_date.month, last_date.day, 23, 59, 0).timestamp()
+
 
 def last_day_of_month(any_day):
     # The day 28 exists in every month. 4 days later, it's always next month
@@ -179,7 +193,8 @@ def consolidate_save_as_parquet(data_array, product_id, year, month, output_data
         return
     existing_partition_df = load_from_parquet(product_id, year, month, output_data_dir)
     assert int(data_array[0][0]) == int(existing_partition_df[Partition.TIME][0]), "Start time does not align"
-    assert int(data_array[-1][0]) == int(existing_partition_df[Partition.TIME][existing_partition_df.shape[0] - 1]), "End timestamp does not align"
+    assert int(data_array[-1][0]) == int(
+        existing_partition_df[Partition.TIME][existing_partition_df.shape[0] - 1]), "End timestamp does not align"
 
     for i in range(len(data_array)):
         if int(existing_partition_df[Partition.VOLUME][i]) != 0 and data_array[i][5] == 0:

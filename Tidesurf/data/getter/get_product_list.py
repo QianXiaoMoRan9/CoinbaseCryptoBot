@@ -1,6 +1,7 @@
 import requests
 import json
 
+
 def get_product_list():
     url = "https://api.exchange.coinbase.com/products"
 

@@ -3,6 +3,8 @@ from datetime import datetime
 """
 Given a start datetime and end date time, return (year, month) pairs in sequence covering start and end
 """
+
+
 def get_sorted_year_month(start_datetime: datetime, end_datetime: datetime):
     result = list()
     start_year = start_datetime.year
