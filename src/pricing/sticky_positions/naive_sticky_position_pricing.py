@@ -3,6 +3,7 @@ from data.model.tick import Tick
 from data.model.market_positions import MarketPositions
 import numpy as np
 from typing import List
+
 """
 Stickiness == position distribution (% of position at this price point)
 """

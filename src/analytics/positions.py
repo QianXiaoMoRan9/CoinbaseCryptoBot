@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from utils.directory_utils import get_monthly_partition_file_name
 from utils.datetime_utils import get_sorted_year_month
 from data.model.partition import Partition
+from data.model.market_positions import MarketPositions
 from utils.number_utils import get_interval_steps, round_float, precision_to_precision_value
 import numpy as np
 
@@ -23,7 +24,7 @@ Returns:
     ...
 ]
 """
-def get_interval_market_positions(base_directory: str, product_id: str, start_timestamp: int, end_timestamp: int, precision=2):
+def get_interval_market_positions(base_directory: str, product_id: str, start_timestamp: int, end_timestamp: int, precision=2) -> MarketPositions:
     assert start_timestamp <= end_timestamp, f"End time should be same or later then start time, got start {start_timestamp}, end {end_timestamp}"
     start_datetime = datetime.fromtimestamp(start_timestamp)
     end_datetime = datetime.fromtimestamp(end_timestamp)
@@ -56,4 +57,6 @@ def get_interval_market_positions(base_directory: str, product_id: str, start_ti
     
     result_pair = [[key, val] for (key, val) in price_volume_dict.items()]
     result_pair.sort(key = lambda x: x[0])
-    return result_pair
+    result_array = np.array(result_pair)
+    market_position = MarketPositions(start_timestamp, end_timestamp, precision, result_array[0, :], result_array[1, :])
+    return market_position
