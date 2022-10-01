@@ -53,6 +53,6 @@ class MarketPositions(object):
             "end_timestamp": self.end_timestamp,
             "end_datetime": datetime.fromtimestamp(self.end_timestamp),
             "precision": self.precision,
-            "prices, positions": self.prices,
+            "prices": self.prices,
             "positions": self.positions
         })
