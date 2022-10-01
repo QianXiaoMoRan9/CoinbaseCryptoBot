@@ -33,7 +33,7 @@ def get_interval_market_positions(base_directory: str, product_id: str, start_ti
 
     # price -> volume
     price_volume_dict: dict[Decimal, float] = dict()
-    increment = Decimal.from_value(1, precision)
+    increment = Decimal.from_int(1, precision)
 
     for year, month in get_sorted_year_month(start_datetime, end_datetime):
         print(year, month)
