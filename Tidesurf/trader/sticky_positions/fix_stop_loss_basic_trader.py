@@ -1,17 +1,25 @@
 from Tidesurf.trader.base_trader import BaseTrader
+from Tidesurf.data.model.tick import Tick
+from Tidesurf.data.model.order_book import OrderBook
+from Tidesurf.data.model.position import Position
+from Tidesurf.data.model.position_map import PositionMap
+from Tidesurf.data.model.market_positions import MarketPositions
 
 class FixStopLossBasicTrader(BaseTrader):
-    def __init__(self):
-        super().__init__(self)
+    position_map: PositionMap
+    market_positions: MarketPositions
+    def __init__(self, market_positions: MarketPositions, precision: int):
+        super().__init__(precision)
+        self.position_map = PositionMap()
+        self.market_positions = market_positions
 
     """
-    Callback when there is market data updates
-    
-    Takes in the market updated data
-    Update internal states
-    Make decision on whether to make trades
+        Call pricing, if there is:
+        - a profit expectation of greater than 5%
+        - a first stop loss 
     """
-    def handle_market_update(self, ):
+    def handle_market_update(self, cur_tick: Tick, order_book: OrderBook):
+        # update market position
         pass
 
     """

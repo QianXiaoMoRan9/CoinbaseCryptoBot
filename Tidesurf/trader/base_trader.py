@@ -19,8 +19,9 @@ It calls:
 
 """
 class BaseTrader(object):
-    def __init__(self, *args, **kwargs):
-        pass
+    precision: int
+    def __init__(self, precision):
+        self.precision = precision
 
     """
     Callback when there is market data updates
