@@ -1,3 +1,10 @@
+from typing import List
+from Tidesurf.data.model.decimal import PreciseDecimal
+from Tidesurf.pricing.base_pricing import BasePricing
+from Tidesurf.data.model.position import Position
+from Tidesurf.data.model.position_map import PositionMap
+from Tidesurf.position_manager.base_position_manager import BasePositionManager
+from Tidesurf.exchange.base_exchange import BaseExchange
 """
 Make trading decision and call the order execution API
 
@@ -19,10 +26,17 @@ It calls:
 
 """
 class BaseTrader(object):
+    exchange: BaseExchange
+    pricing: BasePricing
     precision: int
-    def __init__(self, precision):
-        self.precision = precision
 
+    def __init__(self,
+                 exchange: BaseExchange,
+                 pricing: BasePricing,
+                 precision: int):
+        self.exchange = exchange
+        self.pricing = pricing
+        self.precision = precision
     """
     Callback when there is market data updates
 

@@ -3,12 +3,12 @@
 import os
 from tqdm import tqdm
 from Tidesurf.utils.directory_utils import get_monthly_partition_file_name
-from Tidesurf.data.getter.get_month_candle import load_from_parquet, save_as_parquet
+from Tidesurf.data.fetcher.coinbase.get_month_candle import load_from_parquet, save_as_parquet
 from datetime import datetime, timedelta, date
 from Tidesurf.data.model.partition import Partition
 
 
-def raw_data_cleanup(raw_data_dir, output_data_dir, product_id, start_year, start_month, end_year, end_month):
+def raw_data_cleanup(raw_data_dir, output_data_dir, symbol, start_year, start_month, end_year, end_month):
     # use sliding window to gradually shift data
     prev_year = None
     prev_month = None
@@ -20,7 +20,7 @@ def raw_data_cleanup(raw_data_dir, output_data_dir, product_id, start_year, star
     next_month = None
     next_data = list()
 
-    product_output_folder = os.path.join(output_data_dir, product_id)
+    product_output_folder = os.path.join(output_data_dir, symbol)
     os.mkdir(product_output_folder) if not os.path.exists(product_output_folder) else print()
 
     for cur_year in range(start_year, end_year + 1):
@@ -31,7 +31,7 @@ def raw_data_cleanup(raw_data_dir, output_data_dir, product_id, start_year, star
             month_list = [x for x in range(1, end_month + 1)]
 
         for cur_month in month_list:
-            raw_data_df = load_from_parquet(product_id, cur_year, cur_month, raw_data_dir)
+            raw_data_df = load_from_parquet(symbol, cur_year, cur_month, raw_data_dir)
 
             for _, row in raw_data_df.iterrows():
                 cur_time = datetime.fromtimestamp(row[Partition.TIME])
@@ -66,7 +66,7 @@ def raw_data_cleanup(raw_data_dir, output_data_dir, product_id, start_year, star
                         cur_data.extend(dedup_result)
             # save prev, reset prev
             prev_data.extend(get_padded_list_backward(prev_data))
-            consolidate_save_as_parquet(prev_data, product_id, prev_year, prev_month, output_data_dir)
+            consolidate_save_as_parquet(prev_data, symbol, prev_year, prev_month, output_data_dir)
             prev_month = cur_month
             prev_year = cur_year
             prev_data = cur_data
@@ -77,16 +77,16 @@ def raw_data_cleanup(raw_data_dir, output_data_dir, product_id, start_year, star
             next_data = list()
             print(prev_year, prev_month, cur_year, cur_month, next_year, next_month)
     prev_data.extend(get_padded_list_backward(prev_data))
-    consolidate_save_as_parquet(prev_data, product_id, prev_year, prev_month, output_data_dir)
+    consolidate_save_as_parquet(prev_data, symbol, prev_year, prev_month, output_data_dir)
     print(f"Saving final remaining: {prev_year}/{prev_month}")
     if (cur_data):
         cur_time = datetime.fromtimestamp(cur_data[0][0])
         cur_data.extend(get_padded_list_backward(cur_data))
-        consolidate_save_as_parquet(cur_data, product_id, cur_time.year, cur_time.month, output_data_dir)
+        consolidate_save_as_parquet(cur_data, symbol, cur_time.year, cur_time.month, output_data_dir)
         print(f"Saving next month spillover: {cur_time.year}/{cur_time.month}")
 
 
-def verify_cleanup(data_dir, product_id, start_year, start_month, end_year, end_month):
+def verify_cleanup(data_dir, symbol, start_year, start_month, end_year, end_month):
     for cur_year in range(start_year, end_year + 1):
         month_list = [x for x in range(1, 12 + 1)]
         if cur_year == start_year:
@@ -95,12 +95,12 @@ def verify_cleanup(data_dir, product_id, start_year, start_month, end_year, end_
             month_list = [x for x in range(1, end_month + 1)]
 
         for cur_month in month_list:
-            verify_product_month_data(product_id, cur_year, cur_month, data_dir)
+            verify_product_month_data(symbol, cur_year, cur_month, data_dir)
             print(f"Finished verifying {cur_year}/{cur_month}")
 
 
-def verify_product_month_data(product_id, year, month, output_folder):
-    df = load_from_parquet(product_id, year, month, output_folder)
+def verify_product_month_data(symbol, year, month, output_folder):
+    df = load_from_parquet(symbol, year, month, output_folder)
     cur_time = 0
     start_time = 0
     end_time = 0
@@ -185,13 +185,13 @@ def last_day_of_month(any_day):
     return next_month - timedelta(days=next_month.day)
 
 
-def consolidate_save_as_parquet(data_array, product_id, year, month, output_data_dir):
+def consolidate_save_as_parquet(data_array, symbol, year, month, output_data_dir):
     # Load existing data partition of the month, if exists
-    existing_partition_name = get_monthly_partition_file_name(output_data_dir, product_id, year, month)
+    existing_partition_name = get_monthly_partition_file_name(output_data_dir, symbol, year, month)
     if not os.path.exists(existing_partition_name):
-        save_as_parquet(data_array, product_id, year, month, output_data_dir)
+        save_as_parquet(data_array, symbol, year, month, output_data_dir)
         return
-    existing_partition_df = load_from_parquet(product_id, year, month, output_data_dir)
+    existing_partition_df = load_from_parquet(symbol, year, month, output_data_dir)
     assert int(data_array[0][0]) == int(existing_partition_df[Partition.TIME][0]), "Start time does not align"
     assert int(data_array[-1][0]) == int(
         existing_partition_df[Partition.TIME][existing_partition_df.shape[0] - 1]), "End timestamp does not align"
@@ -204,4 +204,4 @@ def consolidate_save_as_parquet(data_array, product_id, year, month, output_data
             data_array[i][3] = existing_partition_df[Partition.OPEN][i]
             data_array[i][4] = existing_partition_df[Partition.CLOSE][i]
             data_array[i][5] = existing_partition_df[Partition.VOLUME][i]
-    save_as_parquet(data_array, product_id, year, month, output_data_dir)
+    save_as_parquet(data_array, symbol, year, month, output_data_dir)

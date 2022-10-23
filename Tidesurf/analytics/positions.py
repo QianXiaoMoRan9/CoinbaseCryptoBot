@@ -1,5 +1,5 @@
-from Tidesurf.data.getter.get_month_candle import load_from_parquet
-from datetime import datetime, timedelta
+from Tidesurf.data.fetcher.coinbase.get_month_candle import load_from_parquet
+from datetime import datetime
 from Tidesurf.data.model.decimal import PreciseDecimal
 from Tidesurf.utils.datetime_utils import get_sorted_year_month
 from Tidesurf.data.model.partition import Partition
@@ -10,8 +10,8 @@ import numpy as np
 """
 Assumes the directory structure is the following:
 base_directory/
-    product_id/
-        {product_id}_{year}_{month}.parquet
+    symbol/
+        {symbol}_{year}_{month}.parquet
 
 start_datetime: datetime.datetime
 end_datetime: datetime.datetime
@@ -26,7 +26,7 @@ Returns:
 """
 
 
-def get_interval_market_positions(base_directory: str, product_id: str, start_timestamp: int, end_timestamp: int,
+def get_interval_market_positions(base_directory: str, symbol: str, start_timestamp: int, end_timestamp: int,
                                   precision=2) -> MarketPositions:
     assert start_timestamp <= end_timestamp, f"End time should be same or later then start time, got start {start_timestamp}, end {end_timestamp} "
     start_datetime = datetime.fromtimestamp(start_timestamp)
@@ -39,7 +39,7 @@ def get_interval_market_positions(base_directory: str, product_id: str, start_ti
         print(increment)
         for year, month in get_sorted_year_month(start_datetime, end_datetime):
             print(year, month)
-            df = load_from_parquet(product_id, year, month, base_directory)
+            df = load_from_parquet(symbol, year, month, base_directory)
             num_record = df.shape[0]
             # calculate the interval of this df to be calculated
             df_end_timestamp = int(df[Partition.TIME][num_record - 1])

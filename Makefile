@@ -1,5 +1,5 @@
 run:
-	python3 main.py
+	doppler run -- python3 main.py
 
 init:
 	source venv/bin/activate

@@ -24,15 +24,15 @@ Example input:
 """
 
 
-def get_and_save_product_month_data(product_id, year, month, output_folder):
-    result_array = get_product_month_candle(product_id, year, month)
+def get_and_save_product_month_data(symbol, year, month, output_folder):
+    result_array = get_product_month_candle(symbol, year, month)
     if (len(result_array) != 0) and (len(result_array[0]) != 0):
-        save_as_parquet(result_array, product_id, year, month, output_folder)
+        save_as_parquet(result_array, symbol, year, month, output_folder)
     else:
-        print(f"No data found for {product_id}, for {year}/{month}, not saving")
+        print(f"No data found for {symbol}, for {year}/{month}, not saving")
 
 
-def get_product_month_candle(product_id, year, month):
+def get_product_month_candle(symbol, year, month):
     month_start = f"{year}-{fill_zero(month)}-01T00:00:00"
     delta = timedelta(minutes=MAX_RECORD)
     start_time = datetime.fromisoformat(month_start)
@@ -44,40 +44,40 @@ def get_product_month_candle(product_id, year, month):
             end_time = find_last_minute_in_month(month, end_time)
         if start_time == end_time:
             break
-        result = request_data(product_id, start_time, end_time)
+        result = request_data(symbol, start_time, end_time)
         result.reverse()
         if len(result) != 0:
             result_array.extend(result)
         start_time = end_time
-        if (start_time.month != month):
+        if start_time.month != month:
             break
         # sleep to satisfy TPS requirement
         time.sleep(SLEEP_TIME)
     return result_array
 
 
-def save_as_parquet(result_array, product_id, year, month, output_folder):
+def save_as_parquet(result_array, symbol, year, month, output_folder):
     if (result_array):
         df = pd.DataFrame(result_array)
         df.columns = Partition.COLUMNS
         table = pa.Table.from_pandas(df)
-        pq.write_table(table, get_monthly_partition_file_name(output_folder, product_id, year, month))
+        pq.write_table(table, get_monthly_partition_file_name(output_folder, symbol, year, month))
 
 
-def load_from_parquet(product_id, year, month, output_folder):
-    return pd.read_parquet(get_monthly_partition_file_name(output_folder, product_id, year, month), engine='pyarrow')
+def load_from_parquet(symbol, year, month, output_folder):
+    return pd.read_parquet(get_monthly_partition_file_name(output_folder, symbol, year, month), engine='pyarrow')
 
 
-def request_data(product_id, start_time, end_time):
+def request_data(symbol, start_time, end_time):
     try:
-        url = f"https://api.exchange.coinbase.com/products/{product_id}/candles?granularity={60}&start={start_time.isoformat()}&end={end_time.isoformat()}"
+        url = f"https://api.exchange.coinbase.com/products/{symbol}/candles?granularity={60}&start={start_time.isoformat()}&end={end_time.isoformat()}"
         headers = {"Accept": "application/json"}
-        print("Before response ", product_id, start_time, end_time)
+        print("Before response ", symbol, start_time, end_time)
         response = requests.get(url, headers=headers)
         print("after response", response)
         return json.loads(response.text)
     except:
-        print(f"Failed to request {product_id}, {start_time} - {end_time}")
+        print(f"Failed to request {symbol}, {start_time} - {end_time}")
         return []
 
 
