@@ -31,7 +31,7 @@ class NaiveStickyPositionPricing(BasePricing):
                 target_price_probability_list.append(self._position_distribution[index])
             else:
                 stop_loss_list.append(profit)
-                stop_loss_probability_list.append((profit))
+                stop_loss_probability_list.append(profit)
         return np.array(target_price_list), np.array(target_price_probability_list), np.array(stop_loss_list), np.array(
             stop_loss_probability_list)
 
