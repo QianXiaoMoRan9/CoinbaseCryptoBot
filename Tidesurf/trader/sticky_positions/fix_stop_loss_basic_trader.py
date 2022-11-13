@@ -25,7 +25,7 @@ class FixStopLossBasicTrader(BaseTrader):
                  current_cash: PreciseDecimal,
                  precision: int,
                  buy_threshold: np.float64 = np.float64(0.05)):
-        super().__init__( exchange, pricing, precision)
+        super().__init__(exchange, pricing, precision)
         self.symbol = symbol
         self.position_manager = BasePositionManager(current_cash, current_positions)
         self.market_positions = market_positions

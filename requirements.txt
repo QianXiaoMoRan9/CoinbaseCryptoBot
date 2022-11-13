@@ -6,3 +6,6 @@ notebook
 numpy
 websocket-client
 rel
+Flask
+scipy
+matplotlib
