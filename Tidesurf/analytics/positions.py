@@ -1,7 +1,7 @@
-from Tidesurf.data.fetcher.coinbase.get_month_candle import load_from_parquet
+from Tidesurf.data.exchange.coinbase.get_month_candle import load_from_parquet
 from datetime import datetime
 from Tidesurf.data.model.decimal import PreciseDecimal
-from Tidesurf.utils.datetime_utils import get_sorted_year_month
+from Tidesurf.utils.datetime_utils import get_sorted_year_month, from_timestamp
 from Tidesurf.data.model.partition import Partition
 from Tidesurf.data.model.market_positions import MarketPositions
 from Tidesurf.data.constants.coinbase_timestamp_second import COINBASE_TIMESTAMP_SECOND
@@ -28,9 +28,13 @@ Returns:
 
 def get_interval_market_positions(base_directory: str, symbol: str, start_timestamp: int, end_timestamp: int,
                                   precision=2) -> MarketPositions:
+    """
+    Start_timestamp: millisecond
+    end_timestamp: millisecond
+    """
     assert start_timestamp <= end_timestamp, f"End time should be same or later then start time, got start {start_timestamp}, end {end_timestamp} "
-    start_datetime = datetime.fromtimestamp(start_timestamp)
-    end_datetime = datetime.fromtimestamp(end_timestamp)
+    start_datetime = from_timestamp(start_timestamp)
+    end_datetime = from_timestamp(end_timestamp)
     with PreciseDecimal.localcontext() as local_context:
         # local_context.prec = precision
         # price -> volume

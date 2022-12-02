@@ -1,7 +1,7 @@
 import os
 
-from Tidesurf.data.fetcher.coinbase.get_month_candle import get_and_save_product_month_data
-from Tidesurf.data.fetcher.coinbase.get_product_list import get_product_list
+from Tidesurf.data.exchange.coinbase.get_month_candle import get_and_save_product_month_data
+from Tidesurf.data.exchange.coinbase.get_product_list import get_product_list
 
 
 def execute_get_monthly_data_for_all_product(raw_data_dir):

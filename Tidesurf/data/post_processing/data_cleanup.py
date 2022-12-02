@@ -3,7 +3,7 @@
 import os
 from tqdm import tqdm
 from Tidesurf.utils.directory_utils import get_monthly_partition_file_name
-from Tidesurf.data.fetcher.coinbase.get_month_candle import load_from_parquet, save_as_parquet
+from Tidesurf.data.exchange.coinbase.get_month_candle import load_from_parquet, save_as_parquet
 from datetime import datetime, timedelta, date
 from Tidesurf.data.model.partition import Partition
 

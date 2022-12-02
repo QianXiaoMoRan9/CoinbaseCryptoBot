@@ -3,12 +3,14 @@ import numpy as np
 import math
 from Tidesurf.utils.pretty_print import pretty_print
 from datetime import datetime
+from Tidesurf.utils.datetime_utils import from_timestamp
 
 """
 市场在一个时间区间之内的头寸分布情况
 """
 @dataclass
 class MarketPositions(object):
+    # in milliseconds
     start_timestamp: int
     end_timestamp: int
     # 10 ^ (-precision) as the incremental step for the number
@@ -49,9 +51,9 @@ class MarketPositions(object):
     def __repr__(self) -> str:
         return pretty_print({
             "start_timestamp": self.start_timestamp,
-            "start_datetime": datetime.fromtimestamp(self.start_timestamp),
+            "start_datetime": from_timestamp(self.start_timestamp),
             "end_timestamp": self.end_timestamp,
-            "end_datetime": datetime.fromtimestamp(self.end_timestamp),
+            "end_datetime": from_timestamp(self.end_timestamp),
             "precision": self.precision,
             "prices": self.prices,
             "positions": self.positions

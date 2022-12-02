@@ -22,3 +22,16 @@ def get_sorted_year_month(start_datetime: datetime, end_datetime: datetime):
         for month in month_list:
             result.append((year, month))
     return result
+
+def from_timestamp(timestamp: int) -> datetime:
+    """
+    datetime.fromtimestamp() but in milliseconds
+    """
+    return datetime.fromtimestamp(timestamp // 1000)
+
+def to_timestamp(dt: datetime) -> int:
+    """
+    datetime.timestamp() but in milliseconds
+    """
+    return int(dt.timestamp() * 1000)
+
