@@ -1,6 +1,8 @@
-from Tidesurf.analytics.indicators.interval_buffer import IntervalBuffer
 from typing import List
+
 import numpy as np
+
+from Tidesurf.analytics.indicators.indicator import Indicator
 
 """
 Exponential moving average for a given period
@@ -16,43 +18,25 @@ MULTIPLIER = SMOOTHING/(1 + NUM_INTERVAL)
 EMA_t = PRICE_t * MULTIPLIER + EMA_t-1 * (1 - MULTIPLIER)
 """
 
-class EMA:
-    # interval of the data points, such as 5m, 1m, 1hr, in number of seconds
-    interval_length: int
+
+class EMA(Indicator[List[np.float64], np.float64]):
     smoothing: int
     num_interval: int
-    start_timestamp: int
 
     multiplier: np.float64
-
-    interval_buffer: IntervalBuffer[List[List[np.float64]]]
-    indicator_values: List[np.float64]
 
     ZERO_PRICE = np.float64(0.)
 
     def __init__(self, interval_length: int, num_interval: int, start_timestamp: int, smoothing: int = 2):
-        self.interval_length = interval_length
+        super().__init__(interval_length, start_timestamp)
         self.smoothing = smoothing
         self.num_interval = num_interval
-        self.start_timestamp = start_timestamp
 
         self.multiplier = np.float64(smoothing / (1 + self.num_interval))
         print("Got multiplier ", self.multiplier)
         self.average_prices = list()
-        self.indicator_values = list()
-        self.interval_buffer = IntervalBuffer(self.interval_length, self.start_timestamp)
 
-    # [price, volume]
-    def append(self, timestamp: int, data: List[np.float64]):
-        if self.interval_buffer.is_outside_cur_buffer_interval(timestamp):
-            interval_data = self.interval_buffer.get_buffer_data_and_advance()
-            self.compute_and_append_indicator(interval_data)
-            if not interval_data:
-                self.append(timestamp, data)
-        else:
-            self.interval_buffer.append(timestamp, data)
-
-    def compute_and_append_indicator(self, interval_data):
+    def compute_and_append_indicator(self, interval_data: List[List[np.float64]]):
         average_price = EMA.ZERO_PRICE
         if interval_data:
             array = np.array(interval_data)

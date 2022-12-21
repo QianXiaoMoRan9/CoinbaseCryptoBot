@@ -1,4 +1,5 @@
 from flask import Flask, Response, request
+from flask_cors import CORS
 import os
 import json
 from Tidesurf.data.constants.exchanges import Exchanges
@@ -8,7 +9,7 @@ from Tidesurf.analytics.indicators.volume import Volume
 from Tidesurf.data.exchange.binance.binance_trade_loader import BinanceTradeGenerativeLoader
 from Tidesurf.data.model.ui.i_olhc_data import IOHLCData
 app = Flask(__name__)
-
+CORS(app)
 
 @app.route("/")
 def hello_world():
@@ -16,7 +17,7 @@ def hello_world():
 
 
 @app.route("/ping")
-def hello_world():
+def ping():
     return Response(json.dumps({"status": "ok"}), mimetype="application/json", status=200)
 
 

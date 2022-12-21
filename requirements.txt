@@ -7,5 +7,6 @@ numpy
 websocket-client
 rel
 Flask
+flask-cors
 scipy
 matplotlib

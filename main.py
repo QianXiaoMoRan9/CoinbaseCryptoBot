@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
 
     ### Fetch crypto all historic records, Binance
-    SYMBOL = "ETHUSD"
+    SYMBOL = "UNIUSD"
     fetcher = BinanceTradeFetcher(os.environ.get("BINANCE_API_KEY"), "")
     fetcher.fetch_all_historical_trades_for_product(SYMBOL, ["/Volumes/Crypto_0/Binance", "/Volumes/Crypto_1/Binance"])
 
