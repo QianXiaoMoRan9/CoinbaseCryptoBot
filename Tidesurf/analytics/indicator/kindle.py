@@ -1,15 +1,22 @@
-from typing import List
+from typing import List, Tuple, Hashable
 
 import numpy as np
-
-from Tidesurf.analytics.indicators.indicator import Indicator
+import pandas as pd
+from Tidesurf.analytics.indicator.indicator import Indicator
 
 """
-Kindle chart for O,C, H, L
+Kindle chart for O, C, H, L
 """
 
 
 class Kindle(Indicator[np.float64, List[np.float64]]):
+
+    def append_record(self, record_row: Tuple[Hashable, pd.Series]):
+        timestamp_list = self.storage_adapter.get_timestamp(record_row)
+        price_list = self.storage_adapter.get_price(record_row)
+
+        for i in range(len(timestamp_list)):
+            self.append(timestamp_list[i], price_list[i])
 
     def compute_and_append_indicator(self, interval_data: List[np.float64]):
         if interval_data:

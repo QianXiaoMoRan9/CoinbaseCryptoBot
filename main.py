@@ -1,5 +1,6 @@
 import os
 import logging
+import sys
 from Tidesurf.data.executor.execute_get_monthly_data import execute_get_monthly_data_for_product
 from Tidesurf.data.post_processing.data_cleanup import raw_data_cleanup, verify_cleanup
 # from server.websocket_feed import start_job
@@ -29,30 +30,30 @@ if __name__ == "__main__":
 
 
     ### Fetch crypto all historic records, Binance
-    SYMBOL = "UNIUSD"
-    fetcher = BinanceTradeFetcher(os.environ.get("BINANCE_API_KEY"), "")
-    fetcher.fetch_all_historical_trades_for_product(SYMBOL, ["/Volumes/Crypto_0/Binance", "/Volumes/Crypto_1/Binance"])
-
+    # SYMBOL = "UNIUSD"
+    # fetcher = BinanceTradeFetcher(os.environ.get("BINANCE_API_KEY"), "")
+    # fetcher.fetch_all_historical_trades_for_product(SYMBOL, ["/Volumes/Crypto_0/Binance", "/Volumes/Crypto_1/Binance"])
+    #
 
 
     ### load data
-    # from Tidesurf.data.exchange.binance.binance_trade_loader import BinanceTradeGenerativeLoader
-    # from Tidesurf.analytics.indicators.ema import EMA
-    # from datetime import datetime
-    #
-    # dt = datetime(2022, 11, 20, 0, 0, 1)
-    # binance_loader = BinanceTradeGenerativeLoader(
-    #     ["/Volumes/Crypto_0/Binance", "/Volumes/Crypto_1/Binance"],
-    #     "MATICUSD",
-    #     int(dt.timestamp())
-    # )
-    # ema = EMA(60, 3, int(dt.timestamp()))
-    #
-    # while binance_loader.has_next():
-    #     data = binance_loader.next()
-    #     # print("Append timestamp: ", data[1])
-    #     ema.append(data[1], [data[2], data[3]])
-    #
-    # print(ema.indicator_values)
+    from Tidesurf.data.exchange.binance.binance_trade_loader import BinanceTradeGenerativeLoader
+    from Tidesurf.utils.datetime_utils import to_timestamp
+    from Tidesurf.analytics.indicator.ema import EMA
+    from datetime import datetime
+
+    dt = datetime(2022, 11, 20, 0, 0, 1)
+    binance_loader = BinanceTradeGenerativeLoader(
+        ["/Volumes/Crypto_0/Binance", "/Volumes/Crypto_1/Binance"],
+        "MATICUSD",
+        to_timestamp(dt)
+    )
+    ema = EMA(60, to_timestamp(dt), 3)
+
+    while binance_loader.has_next():
+        data = binance_loader.next()
+        ema.append(data[1], [data[2], data[3]])
+
+    print(ema.indicator_values)
 
 

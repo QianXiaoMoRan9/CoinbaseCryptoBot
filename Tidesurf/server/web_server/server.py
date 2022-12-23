@@ -4,8 +4,8 @@ import os
 import json
 from Tidesurf.data.constants.exchanges import Exchanges
 from Tidesurf.config import Config
-from Tidesurf.analytics.indicators.kindle import Kindle
-from Tidesurf.analytics.indicators.volume import Volume
+from Tidesurf.analytics.indicator.kindle import Kindle
+from Tidesurf.analytics.indicator.volume import Volume
 from Tidesurf.data.exchange.binance.binance_trade_loader import BinanceTradeGenerativeLoader
 from Tidesurf.data.model.ui.i_olhc_data import IOHLCData
 app = Flask(__name__)
@@ -67,7 +67,7 @@ def handle_get_kindle():
 @app.route("/populate_entry_trend")
 def populate_entry_trend_handler():
     """
-    Expect a dictionary of ticker -> value indicators
+    Expect a dictionary of ticker -> value indicator
     request:
     {
         market: {

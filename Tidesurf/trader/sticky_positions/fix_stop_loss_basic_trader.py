@@ -1,6 +1,6 @@
 import numpy as np
 from typing import List
-from Tidesurf.trader.base_trader import BaseTrader
+from Tidesurf.trader.bas_trader import BaseTrader
 from Tidesurf.exchange.base_exchange import BaseExchange
 from Tidesurf.data.model.tick import Tick
 from Tidesurf.data.model.order_book import OrderBook

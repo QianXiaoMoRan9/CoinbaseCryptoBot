@@ -1,12 +1,15 @@
 from abc import ABC, abstractmethod
-from Tidesurf.analytics.indicators.interval_buffer import IntervalBuffer
-from typing import TypeVar, Generic, List
+from Tidesurf.analytics.indicator.interval_buffer import IntervalBuffer
+from Tidesurf.data.storage_adapters.storage_adapter import StorageAdapter
+from typing import TypeVar, Generic, List, Hashable, Tuple
+import pandas as pd
 
 INDICATOR_INPUT_TYPE = TypeVar("INDICATOR_INPUT_TYPE")
 INDICATOR_TYPE = TypeVar("INDICATOR_TYPE")
 
 
 class Indicator(ABC, Generic[INDICATOR_INPUT_TYPE, INDICATOR_TYPE]):
+    storage_adapter: StorageAdapter
     # interval of the data points, such as 5m, 1m, 1hr, in number of seconds
     interval_length: int
     start_timestamp: int
@@ -14,7 +17,12 @@ class Indicator(ABC, Generic[INDICATOR_INPUT_TYPE, INDICATOR_TYPE]):
     interval_buffer: IntervalBuffer[INDICATOR_INPUT_TYPE]
     indicator_values: List[INDICATOR_TYPE]
 
-    def __init__(self, interval_length: int, start_timestamp: int):
+    def __init__(
+            self,
+            storage_adapter: StorageAdapter,
+            interval_length: int,
+            start_timestamp: int):
+        self.storage_adapter = storage_adapter
         self.interval_length = interval_length
         self.start_timestamp = start_timestamp
 
@@ -36,6 +44,10 @@ class Indicator(ABC, Generic[INDICATOR_INPUT_TYPE, INDICATOR_TYPE]):
 
     def get_indicator_values(self) -> List[INDICATOR_TYPE]:
         return self.indicator_values
+
+    @abstractmethod
+    def append_record(self, record_row: Tuple[Hashable, pd.Series]):
+        pass
 
     @abstractmethod
     def compute_and_append_indicator(self, interval_data: List[INDICATOR_INPUT_TYPE]):

@@ -12,7 +12,7 @@ class IntervalBuffer(Generic[BufferData]):
     interval_data: List[BufferData]
 
     def __init__(self, interval_length: int, start_timestamp):
-        self.interval_length = interval_length
+        self.interval_length = interval_length * 1000
         self.start_timestamp = start_timestamp
         self.interval_data = list()
 

@@ -1,8 +1,11 @@
 from typing import List
+from typing import Tuple, Hashable
 
 import numpy as np
+import pandas as pd
 
-from Tidesurf.analytics.indicators.indicator import Indicator
+from Tidesurf.analytics.indicator.indicator import Indicator
+from Tidesurf.data.storage_adapters.storage_adapter import StorageAdapter
 
 """
 Exponential moving average for a given period
@@ -27,8 +30,14 @@ class EMA(Indicator[List[np.float64], np.float64]):
 
     ZERO_PRICE = np.float64(0.)
 
-    def __init__(self, interval_length: int, num_interval: int, start_timestamp: int, smoothing: int = 2):
-        super().__init__(interval_length, start_timestamp)
+    def __init__(
+            self,
+            storage_adapter: StorageAdapter,
+            interval_length: int,
+            start_timestamp: int,
+            num_interval: int,
+            smoothing: int = 2):
+        super().__init__(storage_adapter, interval_length, start_timestamp)
         self.smoothing = smoothing
         self.num_interval = num_interval
 
@@ -36,6 +45,15 @@ class EMA(Indicator[List[np.float64], np.float64]):
         print("Got multiplier ", self.multiplier)
         self.average_prices = list()
 
+    def append_record(self, record_row: Tuple[Hashable, pd.Series]):
+        timestamp_list = self.storage_adapter.get_timestamp(record_row)
+        price_list = self.storage_adapter.get_price(record_row)
+        volume_list = self.storage_adapter.get_volume(record_row)
+
+        for i in range(len(timestamp_list)):
+            self.append(timestamp_list[i], [price_list[i], volume_list[i]])
+
+    # [price, volume]
     def compute_and_append_indicator(self, interval_data: List[List[np.float64]]):
         average_price = EMA.ZERO_PRICE
         if interval_data:

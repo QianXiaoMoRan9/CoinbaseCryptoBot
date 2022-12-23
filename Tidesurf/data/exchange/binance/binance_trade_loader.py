@@ -20,6 +20,7 @@ class BinanceTradeGenerativeLoader:
     cur_datetime: datetime
     cur_df: pd.DataFrame
     cur_df_index: int
+    cur_df_index: int
 
     exhausted = False
 

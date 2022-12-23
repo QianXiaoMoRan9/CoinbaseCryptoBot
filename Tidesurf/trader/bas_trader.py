@@ -28,6 +28,7 @@ It calls:
 class BaseTrader(object):
     exchange: BaseExchange
     pricing: BasePricing
+
     precision: int
 
     def __init__(self,
