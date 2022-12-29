@@ -6,6 +6,7 @@ import pandas as pd
 
 from Tidesurf.analytics.indicator.indicator import Indicator
 from Tidesurf.data.storage_adapters.storage_adapter import StorageAdapter
+from Tidesurf.trader.trader import Trader
 
 """
 Exponential moving average for a given period
@@ -32,12 +33,13 @@ class EMA(Indicator[List[np.float64], np.float64]):
 
     def __init__(
             self,
+            trader: Trader,
             storage_adapter: StorageAdapter,
             interval_length: int,
             start_timestamp: int,
             num_interval: int,
             smoothing: int = 2):
-        super().__init__(storage_adapter, interval_length, start_timestamp)
+        super().__init__(trader, storage_adapter, interval_length, start_timestamp)
         self.smoothing = smoothing
         self.num_interval = num_interval
 

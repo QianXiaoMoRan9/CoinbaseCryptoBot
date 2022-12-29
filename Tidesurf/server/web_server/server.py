@@ -23,7 +23,7 @@ def ping():
 
 """
 url_params:
-- exchange: str e.g.Binance
+- exchange_adapter: str e.g.Binance
 - symbol: str e.g. BTCUSD
 - from_timestamp: int in millisecond
 - to_timestamp: int in millisecond
@@ -31,7 +31,7 @@ url_params:
 """
 @app.route("/get_kindle")
 def handle_get_kindle():
-    exchange = request.args.get('exchange')
+    exchange = request.args.get('exchange_adapter')
     symbol = request.args.get('symbol')
     from_timestamp = int(request.args.get('from_timestamp'))
     to_timestamp = int(request.args.get('to_timestamp'))

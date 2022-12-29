@@ -18,10 +18,10 @@ Stop gain:
 * When the price falls below stop_gain_exit_threshold(50%) of the highest profit rate, exit
 """
 
-
 class WShapeTrader(Trader):
 
     def __init__(self, trader_config: TraderConfig, indicators: List[Indicator], ):
         super().__init__(trader_config, indicators)
+
 
 

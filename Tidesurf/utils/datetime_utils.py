@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 """
 Given a start datetime and end date time, return (year, month) pairs in sequence covering start and end
@@ -27,7 +27,7 @@ def from_timestamp(timestamp: int) -> datetime:
     """
     datetime.fromtimestamp() but in milliseconds
     """
-    return datetime.fromtimestamp(timestamp // 1000)
+    return datetime.fromtimestamp(timestamp // 1000, tz=timezone.utc)
 
 def to_timestamp(dt: datetime) -> int:
     """

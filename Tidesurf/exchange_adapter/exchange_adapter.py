@@ -1,7 +1,17 @@
+from abc import ABC, abstractmethod
+
+from Tidesurf.trader.trader import Trader
 
 
-class BaseExchange(object):
-    def __init__(self):
+class ExchangeAdapter(ABC):
+
+    trader: Trader
+    def __init__(self, trader: Trader):
+        self.trader = trader
+
+    @abstractmethod
+    @property
+    def exchange_name(self):
         pass
 
     def place_market_buy_order(self, symbol: str, price: float, quantity: float or int):

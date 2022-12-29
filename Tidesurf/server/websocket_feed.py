@@ -55,7 +55,7 @@ def message_consumer(queue):
 def start_websocket():
 
     websocket.enableTrace(True)
-    ws = websocket.WebSocketApp("wss://ws-feed.exchange.coinbase.com",
+    ws = websocket.WebSocketApp("wss://ws-feed.exchange_adapter.coinbase.com",
                               on_open=on_open,
                               on_message=on_message,
                               on_error=on_error,

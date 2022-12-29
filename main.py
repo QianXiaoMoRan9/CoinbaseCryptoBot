@@ -23,8 +23,8 @@ if __name__ == "__main__":
 
     # start_job()
     # pprint(get_interval_market_positions('./processed', 'ETH-USD', 1548978840, 1580509200))
-    # exchange = BinanceHistoricalTradeFetcher(os.environ.get("BINANCE_API_KEY"), "")
-    # response = exchange.fetch_historical_trades_for_product("BTCUSD", 0)
+    # exchange_adapter = BinanceHistoricalTradeFetcher(os.environ.get("BINANCE_API_KEY"), "")
+    # response = exchange_adapter.fetch_historical_trades_for_product("BTCUSD", 0)
     # print(datetime.fromtimestamp(response[0]['T'] // 1000), response[0]['a'], response[0]['f'])
     # print(datetime.fromtimestamp(response[-1]['T'] // 1000), response[-1]['a'], response[-1]['f'])
 
@@ -37,23 +37,35 @@ if __name__ == "__main__":
 
 
     ### load data
-    from Tidesurf.data.exchange.binance.binance_trade_loader import BinanceTradeGenerativeLoader
-    from Tidesurf.utils.datetime_utils import to_timestamp
-    from Tidesurf.analytics.indicator.ema import EMA
-    from datetime import datetime
+    # from Tidesurf.data.exchange_adapter.binance.binance_trade_loader import BinanceTradeGenerativeLoader
+    # from Tidesurf.utils.datetime_utils import to_timestamp
+    # from Tidesurf.analytics.indicator.ema import EMA
+    # from datetime import datetime
+    #
+    # dt = datetime(2022, 11, 20, 0, 0, 1)
+    # binance_loader = BinanceTradeGenerativeLoader(
+    #     ["/Volumes/Crypto_0/Binance", "/Volumes/Crypto_1/Binance"],
+    #     "MATICUSD",
+    #     to_timestamp(dt)
+    # )
+    # ema = EMA(60, to_timestamp(dt), 3)
+    #
+    # while binance_loader.has_next():
+    #     data = binance_loader.next()
+    #     ema.append(data[1], [data[2], data[3]])
+    #
+    # print(ema.indicator_values)
 
-    dt = datetime(2022, 11, 20, 0, 0, 1)
-    binance_loader = BinanceTradeGenerativeLoader(
-        ["/Volumes/Crypto_0/Binance", "/Volumes/Crypto_1/Binance"],
-        "MATICUSD",
-        to_timestamp(dt)
-    )
-    ema = EMA(60, to_timestamp(dt), 3)
 
-    while binance_loader.has_next():
-        data = binance_loader.next()
-        ema.append(data[1], [data[2], data[3]])
+    ### SQL database for order management
+    from Tidesurf.database.init import init_db
+    from Tidesurf.database.model import Cash
+    init_db('sqlite:////Users/yingjinglu/Documents/Projects/Trading/CoinbaseCryptoBot/database/test.db')
+    print(Cash.query.all())
+    print(Cash.get_cash())
+    Cash.update_cash(2000)
+    print(Cash.query.all())
+    print(Cash.get_cash())
 
-    print(ema.indicator_values)
 
 

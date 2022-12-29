@@ -4,7 +4,7 @@ from Tidesurf.pricing.base_pricing import BasePricing
 from Tidesurf.data.model.position import Position
 from Tidesurf.data.model.position_map import PositionMap
 from Tidesurf.position_manager.base_position_manager import BasePositionManager
-from Tidesurf.exchange.base_exchange import BaseExchange
+from Tidesurf.exchange_adapter.exchange_adapter import BaseExchange
 """
 Make trading decision and call the order execution API
 
