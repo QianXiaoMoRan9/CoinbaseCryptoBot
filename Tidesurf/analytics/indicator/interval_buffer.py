@@ -4,15 +4,15 @@ BufferData = TypeVar('BufferData')
 
 
 class IntervalBuffer(Generic[BufferData]):
-    # length of interval in seconds
+    # length of interval in ms
     interval_length: int
-    # Very start of data accumulation
+    # Very start of data accumulation in ms
     start_timestamp: int
 
     interval_data: List[BufferData]
 
     def __init__(self, interval_length: int, start_timestamp):
-        self.interval_length = interval_length * 1000
+        self.interval_length = interval_length
         self.start_timestamp = start_timestamp
         self.interval_data = list()
 

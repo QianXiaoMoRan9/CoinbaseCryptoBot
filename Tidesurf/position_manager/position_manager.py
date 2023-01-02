@@ -5,6 +5,7 @@ import functools
 from datetime import datetime
 from Tidesurf.database.enums import TradeMode, OrderIntent, OrderStatus, OrderSide, OrderType
 from Tidesurf.database.model import Trade, Order
+from typing import Tuple
 
 DB_LOCK = Lock()
 
@@ -41,7 +42,7 @@ class PositionManager(ABC):
             stop_loss: float or np.float64,
             strategy: str,
             is_short: bool,
-            trade_mode: str):
+            trade_mode: str) -> Tuple[int, int]:
         order = Order(
             symbol=symbol,
             order_id="",

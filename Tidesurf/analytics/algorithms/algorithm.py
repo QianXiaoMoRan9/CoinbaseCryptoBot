@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import TypeVar, Generic, List, Iterable, Callable
+from typing import TypeVar, Generic, List, Iterable
 from Tidesurf.analytics.indicator.indicator import INDICATOR_TYPE
 from Tidesurf.trader.trader import Trader
 
@@ -17,8 +17,7 @@ class Algorithm(ABC, Generic[PATTERN_INDICATOR_TYPE, PATTERN_TYPE, INDICATOR_TYP
     @abstractmethod
     def get_all_candidates(
             self,
-            x: Iterable[PATTERN_INDICATOR_TYPE],
-            index_to_timestamp: Callable[[int], int]) -> List[PATTERN_TYPE]:
+            x: Iterable[PATTERN_INDICATOR_TYPE]) -> List[PATTERN_TYPE]:
         pass
 
     @abstractmethod

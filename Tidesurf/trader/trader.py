@@ -70,7 +70,7 @@ class Trader(ABC, Generic[INDICATOR_TYPE]):
     def indicator_updates_handler(self, new_indicator: INDICATOR_TYPE, indicator_list: List[INDICATOR_TYPE]):
         self.algorithm.indicator_update_handler(new_indicator, indicator_list)
 
-    def algorithm_position_entry_handler(self, price: np.float64, stop_loss: np.float64, confidence: np.float64):
+    def algorithm_position_entry_handler(self, price: np.float64, stop_loss: np.float64, confidence: np.float64 or float):
         """
         Upon request of position entry from the algorithm indicating a new position entry request
         0. Fiter determine the confidence

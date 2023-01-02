@@ -13,7 +13,7 @@ INDICATOR_TYPE = TypeVar("INDICATOR_TYPE")
 class Indicator(ABC, Generic[INDICATOR_INPUT_TYPE, INDICATOR_TYPE]):
     trader: Trader
     storage_adapter: StorageAdapter
-    # interval of the data points, such as 5m, 1m, 1hr, in number of seconds
+    # interval of the data points, such as 5m, 1m, 1hr, in number of ms
     interval_length: int
     start_timestamp: int
 
@@ -49,6 +49,10 @@ class Indicator(ABC, Generic[INDICATOR_INPUT_TYPE, INDICATOR_TYPE]):
 
     def get_indicator_values(self) -> List[INDICATOR_TYPE]:
         return self.indicator_values
+
+    def index_to_timestamp(self, index: int) -> int:
+        return self.start_timestamp + index * self.interval_length
+
 
     @abstractmethod
     def append_record(self, record_row: Tuple[Hashable, pd.Series]):

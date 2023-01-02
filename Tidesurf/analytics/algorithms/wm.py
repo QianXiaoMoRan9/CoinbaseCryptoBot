@@ -14,6 +14,7 @@ h1           /
 @dataclass
 class W:
     h1: np.float64
+    # in ms
     h1_timestamp: int
     h2: np.float64
     h2_timestamp: int
