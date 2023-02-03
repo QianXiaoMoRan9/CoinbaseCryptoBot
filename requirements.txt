@@ -10,4 +10,5 @@ Flask
 flask-cors
 scipy
 matplotlib
-SQLAlchemy==1.4.45
+SQLAlchemy==2.0.0
+alpaca-py

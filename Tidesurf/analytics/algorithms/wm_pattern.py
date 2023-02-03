@@ -57,8 +57,8 @@ class WPattern(Algorithm[np.float64, W, np.float64]):
                                         self.index_to_timestamp(l2_i)))
         return res
 
-    def load_history_record(self, x: npt.NDArray[np.float64], index_to_timestamp: Callable[[int], int]):
-        self.pattern_list = self.get_all_candidates(x, index_to_timestamp)
+    def load_history_record(self, x: npt.NDArray[np.float64]):
+        self.pattern_list = self.get_all_candidates(x)
 
     def indicator_update_handler(self, new_indicator: np.float64, indicator_list: List[np.float64]):
         # TODO: this REALLY needs to be optimized

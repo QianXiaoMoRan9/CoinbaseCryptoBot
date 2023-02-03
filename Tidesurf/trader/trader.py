@@ -92,4 +92,4 @@ class Trader(ABC, Generic[INDICATOR_TYPE]):
                     self.trade_mode
                 )
                 # Contact exchange_adapter adapter to place order
-                pass
+                self.exchange_adapter.place_market_buy_order(self.symbol, price, allocated_quantity)

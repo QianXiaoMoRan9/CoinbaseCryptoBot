@@ -3,7 +3,7 @@ import numpy as np
 from multiprocessing import Lock
 import functools
 from datetime import datetime
-from Tidesurf.database.enums import TradeMode, OrderIntent, OrderStatus, OrderSide, OrderType
+from Tidesurf.database.enums import TradeMode, TradeIntent, TradeStatus, TradeSide, TradeType
 from Tidesurf.database.model import Trade, Order
 from typing import Tuple
 
@@ -46,15 +46,15 @@ class PositionManager(ABC):
         order = Order(
             symbol=symbol,
             order_id="",
-            order_intent=OrderIntent.ENTRY,
-            status=OrderStatus.PENDING,
-            side=OrderSide.BUY if not is_short else OrderSide.SELL,
+            order_intent=TradeIntent.ENTRY,
+            status=TradeStatus.PENDING,
+            side=TradeSide.BUY if not is_short else TradeSide.SELL,
             amount=quantity,
             filled=0,
             price=price,
             average=0,
             order_datetime=datetime.utcnow(),
-            order_type=OrderType.MARKET
+            order_type=TradeType.MARKET
         )
         trade = Trade(
             exchange=exchange,
