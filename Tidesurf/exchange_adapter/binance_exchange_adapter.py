@@ -26,7 +26,8 @@ class BinanceExchangeAdapter(ExchangeAdapter):
 
     def place_market_buy_order(self, symbol: str, price: float, quantity: float or int):
         if self.trade_mode == TradeMode.BACK_TESTING:
-            BinanceExchangeAdapter.
+            # BinanceExchangeAdapter.
+            pass
         elif self.trade_mode == TradeMode.DRY_RUN:
             BinanceExchangeAdapter._place_market_buy_order_dryrun(symbol, quantity)
         elif self.trade_mode == TradeMode.LIVE:

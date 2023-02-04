@@ -1,6 +1,7 @@
 import os
 import logging
 import sys
+sys.path.append("./Tidesurf")
 from Tidesurf.data.executor.execute_get_monthly_data import execute_get_monthly_data_for_product
 from Tidesurf.data.post_processing.data_cleanup import raw_data_cleanup, verify_cleanup
 # from server.websocket_feed import start_job
