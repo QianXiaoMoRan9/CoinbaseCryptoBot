@@ -56,9 +56,9 @@ def init_db(db_url: str) -> Session:
     Trade._session = shared_session
     Order._session = shared_session
     Cash._session = shared_session
-    Trade.query = Trade._session.query_property()
-    Order.query = Order._session.query_property()
-    Cash.query = Cash._session.query_property()
+    Trade.query = Session.query_property()
+    Order.query = Session.query_property()
+    Cash.query = Session.query_property()
     previous_tables = inspect(engine).get_table_names()
     _DECL_BASE.metadata.create_all(engine)
     check_migrate(engine, decl_base=_DECL_BASE, previous_tables=previous_tables)
