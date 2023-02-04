@@ -60,7 +60,7 @@ if __name__ == "__main__":
     ### SQL database for order management
     from Tidesurf.database.init import init_db
     from Tidesurf.database.model import Cash
-    init_db('sqlite:////Users/yingjinglu/Documents/Projects/Trading/CoinbaseCryptoBot/database/test.db')
+    init_db('sqlite:////home/steven/Disks/Code_Disk/CoinbaseCryptoBot/database/test.db')
     print(Cash.query.all())
     print(Cash.get_cash())
     Cash.update_cash(2000)

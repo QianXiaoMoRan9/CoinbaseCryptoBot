@@ -5,7 +5,6 @@ import os
 import urllib.parse
 import hashlib
 import hmac
-import base64
 import requests
 import time
 
