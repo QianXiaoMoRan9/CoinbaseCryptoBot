@@ -53,9 +53,9 @@ def init_db(db_url: str) -> Session:
     # We should use the scoped_session object - not a seperately initialized version
     Session = scoped_session(sessionmaker(bind=engine, autoflush=False))
     shared_session = Session()
-    Trade._session = shared_session
-    Order._session = shared_session
-    Cash._session = shared_session
+    Trade._session = Session
+    Order._session = Session
+    Cash._session = Session
     Trade.query = Session.query_property()
     Order.query = Session.query_property()
     Cash.query = Session.query_property()
