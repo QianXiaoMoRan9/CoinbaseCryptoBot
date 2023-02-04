@@ -4,7 +4,7 @@ This module contains the class to persist trades into SQLite
 import logging
 from datetime import datetime
 from typing import Optional
-
+from sqlalchemy.orm import scoped_session, Session
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Double
 from sqlalchemy.orm import relationship
 
@@ -47,26 +47,17 @@ class Order(_DECL_BASE):
     # date time the order is placed
     order_filled_datetime = Column(DateTime, nullable=True)
 
-    @staticmethod
-    def commit():
-        Order.query.session.commit()
-
-    @staticmethod
-    def rollback():
-        Order.query.session.rollback()
-
     def __repr__(self):
-
         return (f'Order(id={self.id}, order_id={self.order_id}, trade_id={self.trade_id}, '
                 f'side={self.side}, order_type={self.order_type}, status={self.status}), order_intent={self.order_intent}')
 
     @staticmethod
-    def order_by_id(order_id: str) -> Optional['Order']:
+    def order_by_id(session: Session, order_id: str) -> Optional['Order']:
         """
         Retrieve order based on order_id
         :return: Order or None
         """
-        return Order.query.filter(Order.order_id == order_id).first()
+        return session.query(Order).filter(Order.order_id == order_id).first()
 
 
 class Trade(_DECL_BASE):
@@ -118,7 +109,6 @@ class Trade(_DECL_BASE):
         self.recalc_open_trade_value()
 
     def delete(self) -> None:
-
         for order in self.orders:
             Order.query.session.delete(order)
 
@@ -132,6 +122,7 @@ class Trade(_DECL_BASE):
     @staticmethod
     def rollback():
         Trade.query.session.rollback()
+
 
 class Cash(_DECL_BASE):
     """
@@ -164,13 +155,17 @@ class Cash(_DECL_BASE):
         Returns all open trades
         NOTE: Not supported in Backtesting.
         """
-        return Cash.query.order_by(Cash.update_date.desc()).limit(1)[0].amount
+        res = list(Cash.query.order_by(Cash.update_date.desc()).limit(1))
+        if not res:
+            return 0
+        return res[0].amount
 
     @staticmethod
     def update_cash(amount: float):
-        cash = Cash(amount=amount, update_date = datetime.utcnow())
+        cash = Cash(amount=amount, update_date=datetime.utcnow())
         Cash._session.add_all([cash])
         Cash.commit()
+
 
 class ExchangeSimulatorCash(_DECL_BASE):
     """
@@ -190,26 +185,20 @@ class ExchangeSimulatorCash(_DECL_BASE):
     update_date = Column(DateTime, nullable=False, default=datetime.utcnow, index=True)
 
     @staticmethod
-    def commit():
-        ExchangeSimulatorCash.query.session.commit()
-
-    @staticmethod
-    def rollback():
-        ExchangeSimulatorCash.query.session.rollback()
-
-    @staticmethod
-    def get_cash() -> float:
+    def get_cash(session: Session) -> float:
         """
         Returns all open trades
         NOTE: Not supported in Backtesting.
         """
-        return ExchangeSimulatorCash.query.order_by(ExchangeSimulatorCash.update_date.desc()).limit(1)[0].amount
+        res = list(session.query(ExchangeSimulatorCash).order_by(ExchangeSimulatorCash.update_date.desc()).limit(1))
+        if not res:
+            return 0
+        return res[0].amount
 
     @staticmethod
-    def update_cash(amount: float):
-        cash = ExchangeSimulatorCash(amount=amount, update_date = datetime.utcnow())
-        ExchangeSimulatorCash._session.add_all([cash])
-        ExchangeSimulatorCash.commit()
+    def update_cash(session: Session, amount: float):
+        cash = ExchangeSimulatorCash(amount=amount, update_date=datetime.utcnow())
+        session.add_all([cash])
 
 class ExchangeSimulatorOrder(_DECL_BASE):
     """
@@ -240,6 +229,7 @@ class ExchangeSimulatorOrder(_DECL_BASE):
     # date time the order is placed
     order_filled_datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
 
+
 class ExchangeSimulatorTrade(_DECL_BASE):
     """
     Trade database model.
@@ -253,7 +243,8 @@ class ExchangeSimulatorTrade(_DECL_BASE):
 
     id = Column(Integer, primary_key=True)
 
-    exchange_simulator_orders = relationship("ExchangeSimulatorOrder", order_by="ExchangeSimulatorOrder.id", cascade="all, delete-orphan", lazy="joined")
+    exchange_simulator_orders = relationship("ExchangeSimulatorOrder", order_by="ExchangeSimulatorOrder.id",
+                                             cascade="all, delete-orphan", lazy="joined")
 
     exchange = Column(String(25), nullable=False)
 
@@ -267,3 +258,11 @@ class ExchangeSimulatorTrade(_DECL_BASE):
     trade_side = Column(String(50), nullable=False)
     # Status: pending, partially filled, filled, canceled
     status = Column(String(255), nullable=True, index=True)
+
+    @staticmethod
+    def get_trade_by_id(session: Session, id_: int):
+        res = list(session.query(ExchangeSimulatorTrade).filter(id==id_))
+        if not res:
+            return None
+        return res[0]
+

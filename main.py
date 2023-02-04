@@ -60,12 +60,36 @@ if __name__ == "__main__":
     ### SQL database for order management
     from Tidesurf.database.init import init_db
     from Tidesurf.database.model import Cash
-    init_db('sqlite:////home/steven/Disks/Code_Disk/CoinbaseCryptoBot/database/test.db')
-    print(Cash.query.all())
-    print(Cash.get_cash())
-    Cash.update_cash(2000)
-    print(Cash.query.all())
-    print(Cash.get_cash())
+    from Tidesurf.simulation.exchange.exchange_simulator import ExchangeSimulator
+    from Tidesurf.database.enums import TradeStatus, TradeType, TradeSide
+    from Tidesurf.database.model import ExchangeSimulatorTrade, ExchangeSimulatorCash
+    session = init_db('sqlite:////home/steven/Disks/Code_Disk/CoinbaseCryptoBot/database/test.db')
+    # print(Cash.query.all())
+    # print(Cash.get_cash())
+    # Cash.update_cash(100000)
+    # print(Cash.query.all())
+    # print(Cash.get_cash())
+    # session.close_all()
+    # local_session = session()
+    # with local_session.begin() as txn:
+    #     res = ExchangeSimulatorCash.update_cash(local_session, 100000)
+    #     local_session.commit()
+    # local_session.close()
+
+
+    exchange_simulator = ExchangeSimulator(session, "test exchange")
+    response = exchange_simulator.create_trade_handler(
+        "BTCUSD",
+        TradeSide.BUY,
+        TradeType.MARKET,
+        1.0,
+        24000.65
+    )
+    print(response)
+    print(exchange_simulator.get_trade_handler(response.id))
+
+
+
 
 
 

@@ -5,12 +5,12 @@ import logging
 
 from sqlalchemy import create_engine, inspect
 from sqlalchemy.exc import NoSuchModuleError
-from sqlalchemy.orm import scoped_session, sessionmaker, Session
+from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from Tidesurf.exceptions import OperationalException
 from Tidesurf.database.base import _DECL_BASE
-from Tidesurf.database.model import Order, Trade, Cash
+from Tidesurf.database.model import Order, Trade, Cash, ExchangeSimulatorCash, ExchangeSimulatorOrder, ExchangeSimulatorTrade
 from Tidesurf.database.migrations import check_migrate
 
 logger = logging.getLogger(__name__)
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 _SQL_DOCS_URL = 'http://docs.sqlalchemy.org/en/latest/core/engines.html#database-urls'
 
 
-def init_db(db_url: str) -> Session:
+def init_db(db_url: str) -> scoped_session:
     """
     Initializes this module with the given config,
     registers all known command handlers
@@ -52,14 +52,20 @@ def init_db(db_url: str) -> Session:
     # Scoped sessions proxy requests to the appropriate thread-local session.
     # We should use the scoped_session object - not a seperately initialized version
     Session = scoped_session(sessionmaker(bind=engine, autoflush=False))
-    shared_session = Session()
     Trade._session = Session
     Order._session = Session
     Cash._session = Session
-    Trade.query = Session.query_property()
-    Order.query = Session.query_property()
-    Cash.query = Session.query_property()
+    ExchangeSimulatorCash._session = Session
+    ExchangeSimulatorTrade._session = Session
+    ExchangeSimulatorOrder._session = Session
+    query_property = Session.query_property()
+    Trade.query = query_property
+    Order.query = query_property
+    Cash.query = query_property
+    ExchangeSimulatorOrder.query = query_property
+    ExchangeSimulatorCash.query = query_property
+    ExchangeSimulatorTrade.query = query_property
     previous_tables = inspect(engine).get_table_names()
     _DECL_BASE.metadata.create_all(engine)
     check_migrate(engine, decl_base=_DECL_BASE, previous_tables=previous_tables)
-    return shared_session
+    return Session

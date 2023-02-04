@@ -1,4 +1,4 @@
-from enum import StrEnum
+from Tidesurf.data.model.enum.str_enum import StrEnum
 
 
 class TradeStatus(StrEnum):
@@ -40,4 +40,4 @@ class TradeStatus(StrEnum):
     PENDING = "PENDING"
     REJECTED = "REJECTED"
     COMPLETED = "COMPLETED"
-
+    FILLED = "FILLED"
