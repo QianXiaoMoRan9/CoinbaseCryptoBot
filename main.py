@@ -1,7 +1,7 @@
 import os
 import logging
 import sys
-sys.path.append("/home/steven/Disks/Code_Disk/CoinbaseCryptoBot/Tidesurf")
+sys.path.append("/home/steven/Disks/Code_Disk/CoinbaseCryptoBot")
 for l in sys.path:
     print(l)
 from Tidesurf.data.executor.execute_get_monthly_data import execute_get_monthly_data_for_product
