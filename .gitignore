@@ -163,4 +163,5 @@ cython_debug/
 raw/
 processed/
 database/
+!Tidesurf/database/
 .log/
